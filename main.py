@@ -1,14 +1,10 @@
 import sys
 import mysql.connector
 import random
-import json
-import base64
 
-with open('password.json', 'r') as openfile:
-    credsdic = json.load(openfile)
 
 mydb = mysql.connector.connect(host="localhost", user="root",
-                               passwd=credsdic['sqlpsswd'], database="quiz")
+                               passwd="arpan123", database="quiz")
 mycursor = mydb.cursor(buffered=True)
 
 if mydb.is_connected():
@@ -37,46 +33,41 @@ def home():
 
 
 def question():
-    print("Authentication.....")
-    password_question = input("Enter password to add question : ")
-    if str(base64.b64encode(password_question.encode('utf-8'))) == str(credsdic['quizpsswd']):
-        no_of_times = int(input("Enter the number of questions you want to add : "))
-        for i in range(0, no_of_times):
-            print("Welcome to Question Portal")
-            print("***********************")
-            q = input("Enter the question :")
-            op1 = input("Enter the option 1 :")
-            op2 = input("Enter the option 2 :")
-            op3 = input("Enter the option 3 :")
-            op4 = input("Enter the option 4 :")
-            ans = 0
-            while ans == 0:
-                op = int(input("Which option is correct answer (1,2,3,4) :"))
-                if op == 1:
-                    ans = op1
-                elif op == 2:
-                    ans = op2
-                elif op == 3:
-                    ans = op3
-                elif op == 4:
-                    ans = op4
-                else:
-                    print("Please choose the correct option as answer")
-            print(mycursor.execute("Select * from question"))
-            mycursor.fetchall()
-            qid = mycursor.rowcount + 1
-            variable_command = "Insert into question values ( " + str(qid) + ",'" + q + "','" + op1 + "','" + op2 + "','" + op3 +\
-                                 "','" + op4 + "','" + ans + "');"
-            print(variable_command)
-            mycursor.execute(variable_command)
-            mydb.commit()
-        ch = input("Question added successfully.. Do you want to add more (Y/N)")
-        if ch.islower() == 'y':
-            question()
-        else:
-            home()
+    no_of_times = int(input("Enter the number of questions you want to add : "))
+    for i in range(0, no_of_times):
+        print("Welcome to Question Portal")
+        print("***********************")
+        q = input("Enter the question :")
+        op1 = input("Enter the option 1 :")
+        op2 = input("Enter the option 2 :")
+        op3 = input("Enter the option 3 :")
+        op4 = input("Enter the option 4 :")
+        ans = 0
+        while ans == 0:
+            op = int(input("Which option is correct answer (1,2,3,4) :"))
+            if op == 1:
+                ans = op1
+            elif op == 2:
+                ans = op2
+            elif op == 3:
+                ans = op3
+            elif op == 4:
+                ans = op4
+            else:
+                print("Please choose the correct option as answer")
+        mycursor.execute("Select * from question")
+        mycursor.fetchall()
+        qid = mycursor.rowcount + 1
+        variable_command = "Insert into question values ( " + str(qid) + ",'" + q + "','" + op1 + "','" + op2 + "','" + op3 +\
+                                    "','" + op4 + "','" + ans + "');"
+        print(variable_command)
+        mycursor.execute(variable_command)
+        mydb.commit()
+    ch = input("Question added successfully.. Do you want to add more (Y/N)")
+    if ch.islower() == 'y':
+        question()
     else:
-        print("password not matched")
+        home()
 
 
 def quiz():
